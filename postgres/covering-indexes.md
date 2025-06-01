@@ -9,7 +9,7 @@ SELECT vin, make, model, FROM vehicles WHERE vin = '123xyz'
 I could create an index based on the VIN:
 
 ```SQL
-CREATE idx_vehicles_vin ON vehicles(vin)
+CREATE INDEX idx_vehicles_vin ON vehicles(vin)
 ```
 
 This would create a single column index where the query would 1) find the row in the index that has a vin of "123xyz", then 2) look up the rest of the information (make and model) from the actual table now that we know where to find it.
