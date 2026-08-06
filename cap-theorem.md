@@ -27,6 +27,16 @@ Any requests that would be routed to Node 2 will now fail because the node is of
 
 Now that I think of it, availability strategies might look different depending on what your "node" is:
 If the node is a web server...
-If the node is a database server...
-If the node is a cache...
-If the node is file store...
+- have the load balancer route the request to another node
+If the node is in a database cluster...
+- write to another node in the cluster (with the caveat that a subsequent READ from that user could result in stale data because of data differences between nodes)
+
+Even in web server cases where nodes don't necessarily "go down", if you have a lot of heavy processing work that could & should happen asynchronously you could adopt an 'eventually consistent' model such that expensive work is queued for further processing, however you immediately send a success to the client acknowledging receipt of the work (not necessarily that it was completed successfully, though).
+
+## Prioritizing Consistency
+To prioritize consistency means you will do whatever you can to maintain the integrity of the data, even if that means denying service. You prioritize data correctness over availability.
+- If a node goes down, you may fail the request and return an error to the user and ask them the try again.
+
+Systems where consistency should take precedence are systems where stale data is intolerable - e.g. banking systems, high-frequency trading. Social media platforms on the other hand can stand some eventual consistency. What users will not stand though is low availability (platform won't load). So in that case you'd prioritize availability.
+
+Generally, as a default prioritize availability over consistency unless dealing in a safety-critical, accuracy-critical domain where stale data is intolerable.
