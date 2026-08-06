@@ -1,15 +1,27 @@
 ### CAP Theorem
 
-CAP theorem is the proposition that declares that for a distributed system two of consistency, availability, and partition tolerance is achievable.
+**CAP theorem** is a statement / assertion in distributed systems that argues that two of ***C***onsistency, ***A***vailability, and ***P***artition tolerance are attainable for a given system.
 
-Consistency - the quality describing data that says that all data that is read is always current. There are no stale reads. Every write takes immediate effect for any subsequent reads.
-Consistency is the quality that all writes are immediately reflected in the system.
+*Consistency* - the quality of a system whereby reads always reflect the current state of the system - i.e. stale reads are unacceptable. For any write, all subsequent reads immediately & accurately reflect that write.
 
-Availability - the system does not ever deny service. If one node in the system goes down another node can receive the request instead. 
+*Availability* - the quality of a system whereby service downtime & errors returned to the client are unacceptable.
 
-Partition tolerance - a "partition" in networking-speak is a communication failure between two nodes. So a distributed system (any system in which resources are spread across several nodes / machines),
-is partition tolerance if when the system can still operate while two are more nodes cannot communicate with each other for a period of time. For any distributed system, partition tolerance is
-sort of a "given". A production distributed system is **expected** to be partition tolerant.
+If a system or part thereof becomes unavailable (e.g. node goes offline, resource is locked, node unreachable due to network partitions) the system can still recover and respond successfully.
+
+Web server:
+Assume a system of 3 nodes (web servers) sitting behind a load balancer:
+<img width="650" height="323" alt="image" src="https://github.com/user-attachments/assets/262240a2-cea1-4411-8ea6-1d9ef294cb25" />
+
+Node 2 goes offline due to electrical failures at the data center:
+<img width="634" height="277" alt="image" src="https://github.com/user-attachments/assets/66587fb0-4710-49d6-a1e8-fc0a1f40f2b6" />
+
+The load balancer guarantees availability by routing requests that would have gone to node 2 to other nodes. This might lead to increased latency if web traffic is being routed to servers closest to the user, but we avoid complete denial of service.
+
+Database:
+
+*Partition tolerance* - a "partition" in networking is a communication failure between two nodes (web / database servers). So a distributed system (a collection of independent computers working together as a cohesive unit) is partition tolerant when the system can still function where there is are networking failures such that two or more nodes cannot communicate with each other.
+
+For any distributed system, partition tolerance is *expected*. That is, if you are designing a distributed system your system *should* and *will* be partition tolerant.
 
 (TODO - explain more of WHY it's a given)
 
@@ -38,5 +50,7 @@ To prioritize consistency means you will do whatever you can to maintain the int
 - If a node goes down, you may fail the request and return an error to the user and ask them the try again.
 
 Systems where consistency should take precedence are systems where stale data is intolerable - e.g. banking systems, high-frequency trading. Social media platforms on the other hand can stand some eventual consistency. What users will not stand though is low availability (platform won't load). So in that case you'd prioritize availability.
+
+In terms of ACID-ic database systems, prioritizing consistency might mean locking certain records while transactions are taking place such that other things cannot affect it.
 
 Generally, as a default prioritize availability over consistency unless dealing in a safety-critical, accuracy-critical domain where stale data is intolerable.
